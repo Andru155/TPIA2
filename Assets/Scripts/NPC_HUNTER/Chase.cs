@@ -5,7 +5,7 @@ using UnityEngine;
 public class Chase : IState
 {
     FSM _fsm;
-    Player _b;
+    Boid _b;
     float _maxVelocity, _minRadius, _steeringVelocity;
     Transform _target;
     Transform _transform;
@@ -51,7 +51,8 @@ public class Chase : IState
         Debug.Log("Termino perseguir");
     }
 
-    Vector3 Pursuit(Player actualTarget)
+
+    Vector3 Pursuit(Transform actualTarget)
     {
         
         Vector3 finalPos = actualTarget.position + _b._velocity * Time.deltaTime;
