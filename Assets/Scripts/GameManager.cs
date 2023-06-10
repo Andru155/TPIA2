@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    Vector3 GetRandomLocation()
+    public Vector3 GetRandomLocation()
     {
         float unitsup = 20f;
         float xPoint = Random.Range(-width, width + 1);

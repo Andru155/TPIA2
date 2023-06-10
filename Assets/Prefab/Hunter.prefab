@@ -242,6 +242,7 @@ MonoBehaviour:
   target: {fileID: 0}
   _velocity: {x: 0, y: 0, z: 0}
   _nextPos: 0
-  speed: 10
-  maxSpeed: 30
+  speed: 100
+  maxSpeed: 300
   steeringForce: 1000
+  lossRadius: 30

@@ -27,7 +27,7 @@ public class HunterIA2 : MonoBehaviour
 
     public int _nextPos = 0;
     public float speed,maxSpeed,steeringForce;
-    float lossRadius;
+    [SerializeField]float lossRadius;
 
     Queries myRadius;
     private void Awake()
@@ -105,33 +105,17 @@ public class HunterIA2 : MonoBehaviour
         transform.position += dir.normalized * speed * Time.fixedDeltaTime;
         transform.forward = dir;
 
-        if (dir.magnitude <= 0.2f)
+        if (dir.magnitude <= 3)
         {
             _nextPos++;
+            Debug.Log("paso al siguiente wp");
 
             if (_nextPos >= _waypoints.Length)
                 _nextPos = 0;
         }
     }
 
-    void GetNearestTarget()
-    {
-        Debug.Log(myRadius.selected);
-        if (myRadius.selected!=null)
-        {
-            var x = myRadius.selected
-            .Select(x => x.GetComponent<Boid>())
-            .Where(x => x != null)
-            .OrderBy(x => Vector3.Distance(x.transform.position, transform.position))
-            .FirstOrDefault(null);
-            Debug.Log(x);
-        }
-        else
-        {
-
-        }
-        
-    }
+  
     void ChangeStateFromPatrol()
     {
        
@@ -143,7 +127,7 @@ public class HunterIA2 : MonoBehaviour
 
             var dist = target.transform.position - transform.position;
 
-            if (dist.magnitude <= lossRadius && GameManager.instance.NPCEnergy >= 0)
+            if (dist.magnitude <= myRadius.radius + lossRadius && GameManager.instance.NPCEnergy >= 0)
             {
                 _fsm.SendInput(HunterStates.CHASE);
             }
@@ -161,7 +145,8 @@ public class HunterIA2 : MonoBehaviour
             .SetTransition(HunterStates.PATROL, patrol)
             .Done();
 
-        
+        chase.OnEnter += (x) => { Debug.Log("entro a chase"); };
+
 
         chase.OnUpdate += () => GameManager.instance.NPCEnergy -= Time.deltaTime;
 
@@ -177,6 +162,8 @@ public class HunterIA2 : MonoBehaviour
             else if (target == null && GameManager.instance.NPCEnergy > 0)
                 _fsm.SendInput(HunterStates.PATROL);
         };
+
+        chase.OnExit += (x) => { Debug.Log("salgo de chase, voy a "+x); };
 
     }
 
@@ -219,9 +206,24 @@ public class HunterIA2 : MonoBehaviour
     {
         _velocity = Vector3.ClampMagnitude(_velocity + force, maxSpeed);
     }
-    private void OnValidate()
+
+    void GetNearestTarget()
     {
-        
+        Debug.Log(myRadius.selected);
+        if (myRadius.selected.Any())
+        {
+            target = myRadius.selected
+            .Select(x => x.GetComponent<Boid>())
+            .Where(x => x != null)
+            .OrderBy(x => Vector3.Distance(x.transform.position, transform.position))
+            .FirstOrDefault(null);
+         
+        }
+        else
+        {
+            target = null;
+        }
+
     }
     #endregion
 }
