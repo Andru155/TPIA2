@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{02D36D78-C200-05C0-17BF-D6DF8F1EF052}</ProjectGuid>
+    <ProjectGuid>{B9481F84-AF6F-6E2D-AC83-34356CE72F24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -53,9 +53,6 @@
     <UnityVersion>2020.3.25f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Assets\Scripts\NPC_HUNTER\IState.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\Chase.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\Patrol.cs" />
@@ -64,6 +61,18 @@
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\NPC.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\FSM.cs" />
+    <Compile Include="Assets\Scripts\NPC_HUNTER\HunterIA2.cs" />
+    <Compile Include="Assets\FSM CLASE\FSM\Transition.cs" />
+    <Compile Include="Assets\FSM CLASE\Personaje.cs" />
+    <Compile Include="Assets\FSM CLASE\FSM\StateConfigurer.cs" />
+    <Compile Include="Assets\FSM CLASE\Utility.cs" />
+    <Compile Include="Assets\FSM CLASE\FSM\State.cs" />
+    <Compile Include="Assets\FSM CLASE\FSM\EventFSM.cs" />
+    <Compile Include="Assets\ClaseGrid\Grid\SpatialGrid.cs" />
+    <Compile Include="Assets\ClaseGrid\FList.cs" />
+    <Compile Include="Assets\ClaseGrid\Grid\GridEntity.cs" />
+    <Compile Include="Assets\ClaseGrid\Utility.cs" />
+    <Compile Include="Assets\ClaseGrid\Grid\Queries.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -290,12 +299,6 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.0\Runtime\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Common">
-      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
