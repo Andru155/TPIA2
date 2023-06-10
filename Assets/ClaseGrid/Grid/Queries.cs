@@ -12,6 +12,14 @@ public class Queries : MonoBehaviour
     public float height = 30f;
     public IEnumerable<GridEntity> selected = new List<GridEntity>();
 
+    private void Awake()
+    {
+        selected = new List<GridEntity>();
+    }
+    private void Start()
+    {
+        targetGrid = GameManager.instance.grid;
+    }
     public IEnumerable<GridEntity> Query()
     {
         if (isBox)

@@ -14,6 +14,8 @@ public class GridEntity : MonoBehaviour
         _rend = GetComponent<Renderer>();
     }
 
+   
+
     void Update() {
         if (onGrid)
             _rend.material.color = Color.red;

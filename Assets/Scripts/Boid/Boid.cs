@@ -28,7 +28,7 @@ public class Boid : MonoBehaviour
     private void Start()
     {        
         _npc = new NPC();
-        _hunter = GameManager.instance.hunter;
+        _hunter = GameManager.instance.hunter.gameObject;
         _target = GameManager.instance.food;
         Vector3 randomDir = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized * maxForce;
         AddForce(randomDir);
@@ -51,7 +51,7 @@ public class Boid : MonoBehaviour
         }
         else if (_distToHunter.magnitude <= evadeRadius)
         {
-            AddForce(Evade(GameManager.instance.hunter, _npc) * GameManager.instance.weightEvade);
+            AddForce(Evade(GameManager.instance.hunter.gameObject, _npc) * GameManager.instance.weightEvade);
         }
         else
         {

@@ -1,12 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    public List<Boid> boids = new List<Boid>();
+    [NonSerialized] public List<Boid> boids = new List<Boid>();
     public GameObject food;
-    public GameObject hunter;   
+    public HunterIA2 hunter;   
 
     public float NPCEnergy;
 
@@ -14,6 +16,10 @@ public class GameManager : MonoBehaviour
     public float zPos;
 
     public static GameManager instance;
+
+    public Boid Sample;
+
+    public int quantityToSpawn=5;
 
     //Pesos
     [Range(0, 3)]
@@ -27,12 +33,44 @@ public class GameManager : MonoBehaviour
     [Range(0, 3)]
     public float weightEvade = 1;
 
-    public float width;
-    public float height;
+    public int width;
+    public int height;
 
+   public SpatialGrid grid;
+
+    public Transform wpFather;
     private void Awake()
     {
         instance = this;
+        grid = GetComponent<SpatialGrid>();
+       
+        hunter = Instantiate(hunter, GetRandomLocation(),Quaternion.identity);
+        hunter.wpFather = wpFather;
+        food = Instantiate(food, GetRandomLocation(), Quaternion.identity);
+        for (int i = 0; i < quantityToSpawn; i++)
+        {
+           var a = Instantiate(Sample, GetRandomLocation(), Quaternion.identity);
+            Debug.Log("spawneo boid");
+        }
+    }
+
+    Vector3 GetRandomLocation()
+    {
+        float unitsup = 20f;
+        float xPoint = Random.Range(-width, width + 1);
+        float zpoint = Random.Range(-width, width + 1);
+        Vector3 point= new Vector3(xPoint, unitsup, zpoint);
+        if (Physics.Raycast(point,Vector3.down,out RaycastHit hit))
+        {
+            return hit.point;
+        }
+        else
+        {
+            return GetRandomLocation();
+        }
+      
+       
+
     }
 
     private void Start()
@@ -102,5 +140,9 @@ public class GameManager : MonoBehaviour
         Gizmos.DrawLine(botLeft, topLeft);
     }
 
-
+   [SerializeField] bool change;
+    private void OnValidate()
+    {
+        
+    }
 }

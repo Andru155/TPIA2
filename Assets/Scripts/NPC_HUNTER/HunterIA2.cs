@@ -1,7 +1,9 @@
 using IA2;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
+[RequireComponent(typeof(Queries))]
+[RequireComponent(typeof(GridEntity))]
 public class HunterIA2 : MonoBehaviour
 {
     #region FiniteStateMachine
@@ -16,33 +18,45 @@ public class HunterIA2 : MonoBehaviour
     State<HunterStates> chase;
     #endregion
 
- 
-    Transform[] _waypoints;
-    Boid target;
 
-    Vector3 _velocity;
+    public Transform wpFather;
+    public Transform[] _waypoints;
+    public Boid target;
 
-    int _nextPos;
-    float speed,maxSpeed,steeringForce;
-    float minDetectRadius;
+    public Vector3 _velocity;
 
+    public int _nextPos = 0;
+    public float speed,maxSpeed,steeringForce;
+    float lossRadius;
+
+    Queries myRadius;
     private void Awake()
     {
-        SetIdle(); SetPatrol(); SetChase();
+        myRadius= GetComponent<Queries>();
 
+        
+       
+       
+
+    }
+    private void Start()
+    {
+        _waypoints = wpFather.GetComponentsInChildren<Transform>();
+        SetPatrol(); SetChase(); SetIdle();
         _fsm = new EventFSM<HunterStates>(idle);
     }
 
     void SetIdle()
     {
-        //q copado es esto, ni tuve q poner add
-        var idleTransitions = new Dictionary<HunterStates, Transition<HunterStates>>
-        {
-            { HunterStates.PATROL, new Transition<HunterStates>(HunterStates.PATROL, patrol) },
-            { HunterStates.CHASE, new Transition<HunterStates>(HunterStates.CHASE, chase) }
-        };
+        idle = new State<HunterStates>("Idle");
 
-        idle = new State<HunterStates>("Idle").Configure(idleTransitions);
+        StateConfigurer.Create(idle)
+        .SetTransition(HunterStates.PATROL, patrol)
+        .SetTransition(HunterStates.CHASE, chase)
+        .Done();
+
+        
+        idle.OnEnter += (x) => Debug.Log("entre a idle");
 
         idle.OnUpdate += () => GameManager.instance.NPCEnergy += Time.deltaTime;
 
@@ -53,9 +67,12 @@ public class HunterIA2 : MonoBehaviour
                 if (target == null)
                     _fsm.SendInput(HunterStates.PATROL);
                 else if (target != null)
-                    _fsm.SendInput(HunterStates.PATROL);
+                    _fsm.SendInput(HunterStates.CHASE);
             }
         };
+
+        idle.OnEnter += (x) => Debug.Log("sali de idle");
+        
     }
 
     #region PatrolSet
@@ -67,18 +84,25 @@ public class HunterIA2 : MonoBehaviour
             { HunterStates.CHASE, new Transition<HunterStates>(HunterStates.CHASE, chase) }
         };
 
-        patrol = new State<HunterStates>("Patrol").Configure(patrolTransitions);
+        patrol = new State<HunterStates>("Patrol");
 
-        patrol.OnUpdate += PatrolDir; 
+        StateConfigurer.Create(patrol)
+            .SetTransition(HunterStates.IDLE, idle)
+            .SetTransition(HunterStates.CHASE,chase)
+            .Done();
+
+        patrol.OnUpdate += GetNearestTarget;
+
+        patrol.OnFixedUpdate += PatrolDir; 
 
         patrol.OnLateUpdate += ChangeStateFromPatrol;
     }
 
-
+    
     public void PatrolDir()
     {
         var dir = _waypoints[_nextPos].position - transform.position;
-        transform.position += dir.normalized * speed * Time.deltaTime;
+        transform.position += dir.normalized * speed * Time.fixedDeltaTime;
         transform.forward = dir;
 
         if (dir.magnitude <= 0.2f)
@@ -90,8 +114,28 @@ public class HunterIA2 : MonoBehaviour
         }
     }
 
+    void GetNearestTarget()
+    {
+        Debug.Log(myRadius.selected);
+        if (myRadius.selected!=null)
+        {
+            var x = myRadius.selected
+            .Select(x => x.GetComponent<Boid>())
+            .Where(x => x != null)
+            .OrderBy(x => Vector3.Distance(x.transform.position, transform.position))
+            .FirstOrDefault(null);
+            Debug.Log(x);
+        }
+        else
+        {
+
+        }
+        
+    }
     void ChangeStateFromPatrol()
     {
+       
+
         if (GameManager.instance.NPCEnergy <= 0)
             _fsm.SendInput(HunterStates.IDLE);
         else if (target != null)
@@ -99,7 +143,7 @@ public class HunterIA2 : MonoBehaviour
 
             var dist = target.transform.position - transform.position;
 
-            if (dist.magnitude <= minDetectRadius && GameManager.instance.NPCEnergy >= 0)
+            if (dist.magnitude <= lossRadius && GameManager.instance.NPCEnergy >= 0)
             {
                 _fsm.SendInput(HunterStates.CHASE);
             }
@@ -110,17 +154,21 @@ public class HunterIA2 : MonoBehaviour
 
     void SetChase()
     {
-        var chaseTransitions = new Dictionary<HunterStates, Transition<HunterStates>>
-        {
-            { HunterStates.IDLE, new Transition<HunterStates>(HunterStates.IDLE, idle) },
-            { HunterStates.PATROL, new Transition<HunterStates>(HunterStates.PATROL, patrol) }
-        }; 
+        chase = new State<HunterStates>("Chase");
 
-        chase = new State<HunterStates>("Chase").Configure(chaseTransitions);
+        StateConfigurer.Create(chase)
+            .SetTransition(HunterStates.IDLE, idle)
+            .SetTransition(HunterStates.PATROL, patrol)
+            .Done();
+
+        
 
         chase.OnUpdate += () => GameManager.instance.NPCEnergy -= Time.deltaTime;
 
         chase.OnFixedUpdate += () => AddForce(Pursuit(target));
+
+
+        chase.OnLateUpdate += GetNearestTarget;
 
         chase.OnLateUpdate += () =>
         {
@@ -170,6 +218,10 @@ public class HunterIA2 : MonoBehaviour
     public void AddForce(Vector3 force)
     {
         _velocity = Vector3.ClampMagnitude(_velocity + force, maxSpeed);
+    }
+    private void OnValidate()
+    {
+        
     }
     #endregion
 }
