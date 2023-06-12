@@ -30,15 +30,13 @@ public class HunterIA2 : MonoBehaviour
     [SerializeField]float lossRadius;
 
     Queries myRadius;
+
     private void Awake()
     {
-        myRadius= GetComponent<Queries>();
-
-        
-       
-       
+        myRadius= GetComponent<Queries>();              
 
     }
+
     private void Start()
     {
         _waypoints = wpFather.GetComponentsInChildren<Transform>();
@@ -207,6 +205,8 @@ public class HunterIA2 : MonoBehaviour
         _velocity = Vector3.ClampMagnitude(_velocity + force, maxSpeed);
     }
 
+
+    //IA2-P1
     void GetNearestTarget()
     {
         Debug.Log(myRadius.selected);

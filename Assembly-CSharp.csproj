@@ -53,26 +53,26 @@
     <UnityVersion>2020.3.25f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Assets\ClaseGrid\Grid\SpatialGrid.cs" />
+    <Compile Include="Assets\ClaseGrid\FList.cs" />
+    <Compile Include="Assets\FSM CLASE\FSM\StateConfigurer.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\IState.cs" />
+    <Compile Include="Assets\FSM CLASE\Utility.cs" />
+    <Compile Include="Assets\FSM CLASE\FSM\Transition.cs" />
+    <Compile Include="Assets\ClaseGrid\Grid\Queries.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\Chase.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\Patrol.cs" />
     <Compile Include="Assets\Scripts\Boid\Boid.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\Idle.cs" />
+    <Compile Include="Assets\FSM CLASE\Personaje.cs" />
+    <Compile Include="Assets\FSM CLASE\FSM\State.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\NPC_HUNTER\NPC.cs" />
-    <Compile Include="Assets\Scripts\NPC_HUNTER\FSM.cs" />
-    <Compile Include="Assets\Scripts\NPC_HUNTER\HunterIA2.cs" />
-    <Compile Include="Assets\FSM CLASE\FSM\Transition.cs" />
-    <Compile Include="Assets\FSM CLASE\Personaje.cs" />
-    <Compile Include="Assets\FSM CLASE\FSM\StateConfigurer.cs" />
-    <Compile Include="Assets\FSM CLASE\Utility.cs" />
-    <Compile Include="Assets\FSM CLASE\FSM\State.cs" />
     <Compile Include="Assets\FSM CLASE\FSM\EventFSM.cs" />
-    <Compile Include="Assets\ClaseGrid\Grid\SpatialGrid.cs" />
-    <Compile Include="Assets\ClaseGrid\FList.cs" />
+    <Compile Include="Assets\Scripts\NPC_HUNTER\HunterIA2.cs" />
     <Compile Include="Assets\ClaseGrid\Grid\GridEntity.cs" />
     <Compile Include="Assets\ClaseGrid\Utility.cs" />
-    <Compile Include="Assets\ClaseGrid\Grid\Queries.cs" />
+    <Compile Include="Assets\Scripts\NPC_HUNTER\FSM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -299,6 +299,12 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.0\Runtime\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions.Common">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
@@ -645,38 +651,48 @@
     <Reference Include="System.Xml.Serialization">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\NetStandard\compat\2.0.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VSCode.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.PlasticSCM.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Unity.VSCode.Editor.csproj">
+      <Project>{3684F055-5E50-625B-2723-275AE75F10A9}</Project>
+      <Name>Unity.VSCode.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TextMeshPro.Editor.csproj">
+      <Project>{2F39C4B1-FA2A-ECA7-9168-03D14BEB36EE}</Project>
+      <Name>Unity.TextMeshPro.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.VisualStudio.Editor.csproj">
+      <Project>{C4C65742-C522-82B8-5B04-1DE5539DBED3}</Project>
+      <Name>Unity.VisualStudio.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Timeline.Editor.csproj">
+      <Project>{C82DF9CF-F32B-5FEA-C585-35BF3B89A369}</Project>
+      <Name>Unity.Timeline.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Timeline.csproj">
+      <Project>{E3A4E5A8-31E3-E0CD-3C92-B2C25A2AE4FC}</Project>
+      <Name>Unity.Timeline</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TextMeshPro.csproj">
+      <Project>{118F348D-EEE7-A125-C3F5-4C5006BB95B9}</Project>
+      <Name>Unity.TextMeshPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEditor.UI.csproj">
+      <Project>{822CF555-A7CC-8056-DC18-D471FAA26349}</Project>
+      <Name>UnityEditor.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.PlasticSCM.Editor.csproj">
+      <Project>{A6AF7D2C-D272-0DCE-DE8D-BB7EAF2793DA}</Project>
+      <Name>Unity.PlasticSCM.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Rider.Editor.csproj">
+      <Project>{92815342-2AB5-2534-104A-7DD2E481322A}</Project>
+      <Name>Unity.Rider.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEngine.UI.csproj">
+      <Project>{EEB85E39-46E6-8D4E-2879-11DA10B1FE57}</Project>
+      <Name>UnityEngine.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

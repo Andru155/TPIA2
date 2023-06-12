@@ -67,9 +67,7 @@ public class GameManager : MonoBehaviour
         else
         {
             return GetRandomLocation();
-        }
-      
-       
+        }       
 
     }
 

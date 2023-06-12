@@ -5104,10 +5104,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 0
   z: 0
-  cellWidth: 30
-  cellHeight: 30
-  width: 10
-  height: 10
+  cellWidth: 50
+  cellHeight: 50
+  width: 4
+  height: 4
   AreGizmosShutDown: 1
   activatedGrid: 1
   showLogs: 1

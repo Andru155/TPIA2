@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 8194739393048233466}
   - component: {fileID: 8194739393048233469}
   - component: {fileID: 8194739393048233468}
-  - component: {fileID: 8194739393048233471}
   - component: {fileID: 8194739393048233467}
   - component: {fileID: 8041177283750744868}
+  - component: {fileID: 5484507689614247388}
   m_Layer: 0
-  m_Name: a
+  m_Name: Boid
   m_TagString: Boid
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,19 +84,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8194739393048233471
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8194739393048233470}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8194739393048233467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,11 +98,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 2
   maxForce: 130
-  viewRadius: 179.7
+  viewRadius: 180.26
   separationRadius: 56.09
   evadeRadius: 89.7
-  collisionRadius: 11.99
-  goToFoodRadius: 134.32
+  collisionRadius: 11.6
+  goToFoodRadius: 134.5
   _velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &8041177283750744868
 MonoBehaviour:
@@ -130,4 +117,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velocity: {x: 0, y: 0, z: 0}
-  onGrid: 0
+  onGrid: 1
+--- !u!114 &5484507689614247388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8194739393048233470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a13e56912cd12994d84bf893fd779f87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBox: 0
+  radius: 20
+  targetGrid: {fileID: 2302332091287315701, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
+  width: 15
+  height: 30

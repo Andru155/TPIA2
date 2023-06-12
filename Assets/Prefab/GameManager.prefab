@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2302332091287315696
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2302332091287315703}
+  - component: {fileID: 2302332091287315702}
+  - component: {fileID: 2302332091287315701}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2302332091287315703
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2302332091287315696}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -922.9, y: 0, z: -557.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2302332091287315702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2302332091287315696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f52c770dd9768374f898bddcbfa5d984, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  food: {fileID: 3300288196723672557, guid: ebecf583bf3c243469e6ae6d8adbc78a, type: 3}
+  hunter: {fileID: 8015750875834488118, guid: c31dd330bc45bc148a5434245b94962f, type: 3}
+  NPCEnergy: 100
+  xPos: 0
+  zPos: 0
+  Sample: {fileID: 8194739393048233467, guid: e3bcceb5016025045886b4570a3dff42, type: 3}
+  quantityToSpawn: 10
+  weightSeparation: 1.2
+  weightCohesion: 0.67
+  weightAlignment: 0.88
+  weightArrive: 0.25
+  weightEvade: 0.69
+  width: 923
+  height: 558
+  grid: {fileID: 2302332091287315701}
+  wpFather: {fileID: 0}
+  change: 0
+--- !u!114 &2302332091287315701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2302332091287315696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b449a4e44df8c45a45d0ed3aa10146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  x: -922.9
+  z: -557.9
+  cellWidth: 92.2
+  cellHeight: 55.6
+  width: 20
+  height: 20
+  AreGizmosShutDown: 0
+  activatedGrid: 0
+  showLogs: 1

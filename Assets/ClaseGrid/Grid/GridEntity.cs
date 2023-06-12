@@ -12,9 +12,7 @@ public class GridEntity : MonoBehaviour
     private void Awake()
     {
         _rend = GetComponent<Renderer>();
-    }
-
-   
+    }   
 
     void Update() {
         if (onGrid)

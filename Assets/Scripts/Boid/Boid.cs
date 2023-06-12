@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Boid : MonoBehaviour
-{  
+{
 
     public float maxSpeed;
     public float maxForce;
@@ -11,45 +12,51 @@ public class Boid : MonoBehaviour
     public float viewRadius;
     public float separationRadius;
 
+    Queries _OnRadius;
+
     public float evadeRadius;
     Vector3 _distToHunter;
-    GameObject _hunter;    
+    GameObject _hunter;
 
     NPC _npc;
 
-    GameObject _target;
+    GameObject _food;
     Vector3 _distToFood;
+
+
     public float collisionRadius;
     public float goToFoodRadius;
 
     public Vector3 _velocity;
 
+    private void Awake()
+    {
+        _OnRadius = GetComponent<Queries>();
+    }
 
     private void Start()
-    {        
+    {
         _npc = new NPC();
         _hunter = GameManager.instance.hunter.gameObject;
-        _target = GameManager.instance.food;
+        _food = GameManager.instance.food;
         Vector3 randomDir = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized * maxForce;
         AddForce(randomDir);
+        // tener varios radios ya q no son todos igualkes para todas las funciones
+        _OnRadius.radius = viewRadius;
 
         GameManager.instance.AddToList(this);
     }
 
     private void Update()
     {
-        _distToFood = _target.transform.position - transform.position;
+        _distToFood = _food.transform.position - transform.position;
         _distToHunter = _hunter.transform.position - transform.position;
 
-        if (_distToFood.magnitude <= goToFoodRadius)
-        {
-            Debug.Log(" Dentro del radio de comida ");
-            AddForce(Arrive(_target) * GameManager.instance.weightArrive);
+        if (_OnRadius.selected.Any(entity => entity.gameObject.CompareTag("Food")))
+            GetNearestFood();
 
-            if (_distToFood.magnitude <= collisionRadius)
-                GameManager.instance.FoodDrop();
-        }
-        else if (_distToHunter.magnitude <= evadeRadius)
+
+        if (_distToHunter.magnitude <= evadeRadius)
         {
             AddForce(Evade(GameManager.instance.hunter.gameObject, _npc) * GameManager.instance.weightEvade);
         }
@@ -69,8 +76,56 @@ public class Boid : MonoBehaviour
 
     //FLOCKING
 
+    //IA2-P1
+    void GetNearestFood()
+    {
+        var foodOnRadius = _OnRadius.Query().Where(entity => entity.gameObject.CompareTag("Food"));
+
+        if (foodOnRadius.Any())
+        {
+            Debug.Log("Dentro del radio de comida");
+            GameObject nearestFood = foodOnRadius
+                .OrderBy(entity => Vector3.Distance(transform.position, entity.transform.position))
+                .First()
+                .gameObject;
+
+            AddForce(Arrive(nearestFood) * GameManager.instance.weightArrive);
+
+            if (_distToFood.magnitude <= collisionRadius)
+                GameManager.instance.FoodDrop();
+        }
+    }
+
+
+    //IA2-P1
     Vector3 Alignment()
     {
+        //una lista de boids, excluyendo a mi mismo
+
+        var nearbyBoids = _OnRadius.Query()
+       .Where(entity => entity.gameObject != this)
+       .Select(entity => entity.GetComponent<Boid>())
+       .ToList();
+
+        //si no hay ninguno devuelvo 0 
+        if (!nearbyBoids.Any())
+            return Vector3.zero;
+
+        //la velocidad deseada sera la suma de las velocidades de los demas boids
+
+        Vector3 desired = nearbyBoids
+            .Select(boid => boid._velocity)
+            .Aggregate(Vector3.zero, (current, velocity) => current + velocity);
+
+        //hago el promedio 
+        desired /= nearbyBoids.Count;
+        desired.Normalize();
+        desired *= maxForce;
+
+        return CalculatedSteering(desired);
+
+
+        /*
         Vector3 desired = Vector3.zero;
         int count = 0;
 
@@ -97,10 +152,36 @@ public class Boid : MonoBehaviour
         desired *= maxForce;
 
         return CalculatedSteering(desired);
+        */
     }
 
+    //IA2-P1
     Vector3 Cohesion()
     {
+        //una lista de boids, excluyendome
+        var nearbyBoids = _OnRadius.Query()
+      .Where(entity => entity.gameObject != this)
+      .Select(entity => entity.GetComponent<Boid>())
+      .ToList();
+
+        //si no hay ninguno devuelvo 0 
+        if (!nearbyBoids.Any())
+            return Vector3.zero;
+
+        //sumo las posiciones de los boids
+
+        Vector3 desired = nearbyBoids
+            .Select(boid => boid.transform.position)
+            .Aggregate(Vector3.zero, (current, position) => current + position);
+
+        //hago el promedio 
+        desired /= nearbyBoids.Count;
+        desired.Normalize();
+        desired *= maxForce;
+
+        return CalculatedSteering(desired);
+
+        /*
         Vector3 desired = Vector3.zero;
         int count = 0;
 
@@ -128,10 +209,41 @@ public class Boid : MonoBehaviour
         desired *= maxForce;
 
         return CalculatedSteering(desired);
+        */
     }
 
+    //IA2-P1
     Vector3 Separation()
     {
+        Vector3 desired = Vector3.zero;
+
+        var nearbyBoids = _OnRadius.Query()
+    .Where(entity => entity.gameObject != this)
+    .Select(entity => entity.GetComponent<Boid>())
+    .ToList();
+
+        //si no hay ninguno devuelvo 0 
+        if (!nearbyBoids.Any())
+            return Vector3.zero;
+
+        //saco la distancia de cada boid
+
+        Vector3 distance = nearbyBoids
+            .Select(boid => boid.transform.position)
+            .Aggregate(Vector3.zero, (current, position) => position - current);
+
+        //esto deberia ir ene l aggregatE?
+        desired += distance;
+
+
+        desired = -desired;
+        desired.Normalize();
+        desired *= maxForce;
+
+        return CalculatedSteering(desired);
+
+
+        /*
         Vector3 desired = Vector3.zero;
 
         foreach (var item in GameManager.instance.boids)
@@ -151,6 +263,7 @@ public class Boid : MonoBehaviour
         desired *= maxForce;
 
         return CalculatedSteering(desired);
+        */
     }
 
     // MOVERSE HACIA LA COMIDA 
