@@ -12,7 +12,7 @@ public class Boid : MonoBehaviour
     public float viewRadius;
     public float separationRadius;
 
-    Queries _OnRadius;
+    [SerializeField] Queries _OnRadius;
 
     public float evadeRadius;
     Vector3 _distToHunter;
@@ -27,12 +27,7 @@ public class Boid : MonoBehaviour
     public float collisionRadius;
     public float goToFoodRadius;
 
-    public Vector3 _velocity;
-
-    private void Awake()
-    {
-        _OnRadius = GetComponent<Queries>();
-    }
+    public Vector3 _velocity; 
 
     private void Start()
     {
@@ -41,33 +36,43 @@ public class Boid : MonoBehaviour
         _food = GameManager.instance.food;
         Vector3 randomDir = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized * maxForce;
         AddForce(randomDir);
-        // tener varios radios ya q no son todos igualkes para todas las funciones
+
+        // lo igualo al radio de vision (el mas grande)
         _OnRadius.radius = viewRadius;
+        _OnRadius.isBox = false;
 
         GameManager.instance.AddToList(this);
     }
 
     private void Update()
     {
+        // guardar todos los gameobjects menos a mi mismo y luego preguntar si hay algo?
+        /*
+        _OnRadius.selected = _OnRadius.Query()
+            .Where(entity => entity.gameObject != this);
+        */
+
         _distToFood = _food.transform.position - transform.position;
         _distToHunter = _hunter.transform.position - transform.position;
 
-        if (_OnRadius.selected.Any(entity => entity.gameObject.CompareTag("Food")))
+        if (_OnRadius.selected.Any())
+        {
+            //nunca entra aca
+            Debug.Log("Hay algo en mi radio");
             GetNearestFood();
 
-
-        if (_distToHunter.magnitude <= evadeRadius)
-        {
-            AddForce(Evade(GameManager.instance.hunter.gameObject, _npc) * GameManager.instance.weightEvade);
+            if (_distToHunter.magnitude <= evadeRadius)
+            {
+                AddForce(Evade(GameManager.instance.hunter.gameObject, _npc) * GameManager.instance.weightEvade);
+            }
+            else
+            {
+                AddForce(Separation() * GameManager.instance.weightSeparation);
+                AddForce(Cohesion() * GameManager.instance.weightCohesion);
+                AddForce(Alignment() * GameManager.instance.weightAlignment);
+                Debug.Log(" Fuera del radio ");
+            }
         }
-        else
-        {
-            AddForce(Separation() * GameManager.instance.weightSeparation);
-            AddForce(Cohesion() * GameManager.instance.weightCohesion);
-            AddForce(Alignment() * GameManager.instance.weightAlignment);
-            Debug.Log(" Fuera del radio ");
-        }
-
 
         transform.position += _velocity * Time.deltaTime;
         transform.forward = _velocity;
@@ -79,30 +84,23 @@ public class Boid : MonoBehaviour
     //IA2-P1
     void GetNearestFood()
     {
-        var foodOnRadius = _OnRadius.Query().Where(entity => entity.gameObject.CompareTag("Food"));
+        var foodOnRadius = _OnRadius.selected.Where(entity => entity.gameObject.CompareTag("Food"));
 
         if (foodOnRadius.Any())
         {
             Debug.Log("Dentro del radio de comida");
-            GameObject nearestFood = foodOnRadius
-                .OrderBy(entity => Vector3.Distance(transform.position, entity.transform.position))
-                .First()
-                .gameObject;
-
-            AddForce(Arrive(nearestFood) * GameManager.instance.weightArrive);
+            AddForce(Arrive(GameManager.instance.food) * GameManager.instance.weightArrive);
 
             if (_distToFood.magnitude <= collisionRadius)
                 GameManager.instance.FoodDrop();
         }
     }
 
-
     //IA2-P1
     Vector3 Alignment()
     {
         //una lista de boids, excluyendo a mi mismo
-
-        var nearbyBoids = _OnRadius.Query()
+        var nearbyBoids = _OnRadius.selected
        .Where(entity => entity.gameObject != this)
        .Select(entity => entity.GetComponent<Boid>())
        .ToList();
@@ -112,10 +110,9 @@ public class Boid : MonoBehaviour
             return Vector3.zero;
 
         //la velocidad deseada sera la suma de las velocidades de los demas boids
-
         Vector3 desired = nearbyBoids
-            .Select(boid => boid._velocity)
-            .Aggregate(Vector3.zero, (current, velocity) => current + velocity);
+           .Select(boid => boid._velocity)
+           .Aggregate(Vector3.zero, (current, velocity) => current + velocity);
 
         //hago el promedio 
         desired /= nearbyBoids.Count;
@@ -159,7 +156,7 @@ public class Boid : MonoBehaviour
     Vector3 Cohesion()
     {
         //una lista de boids, excluyendome
-        var nearbyBoids = _OnRadius.Query()
+        var nearbyBoids = _OnRadius.selected
       .Where(entity => entity.gameObject != this)
       .Select(entity => entity.GetComponent<Boid>())
       .ToList();
@@ -217,26 +214,27 @@ public class Boid : MonoBehaviour
     {
         Vector3 desired = Vector3.zero;
 
-        var nearbyBoids = _OnRadius.Query()
-    .Where(entity => entity.gameObject != this)
-    .Select(entity => entity.GetComponent<Boid>())
-    .ToList();
+        var nearbyBoids = _OnRadius.selected
+        .Where(entity => entity.gameObject != this)
+        .Select(entity => entity.GetComponent<Boid>())
+        .ToList();
+
+        var nearbyBoidsInRadius = nearbyBoids
+        .Where(boid => Vector3.Distance(transform.position, boid.transform.position) <= separationRadius)
+        .ToList();
 
         //si no hay ninguno devuelvo 0 
-        if (!nearbyBoids.Any())
+        if (!nearbyBoidsInRadius.Any())
             return Vector3.zero;
 
         //saco la distancia de cada boid
+        Vector3 distance = nearbyBoidsInRadius
+            .Select(boid => transform.position - boid.transform.position)
+            .Aggregate(Vector3.zero, (current, distance) => current + distance);
 
-        Vector3 distance = nearbyBoids
-            .Select(boid => boid.transform.position)
-            .Aggregate(Vector3.zero, (current, position) => position - current);
+        //esto me olvide pq era lo dejo porlas
+        //desired = -desired;
 
-        //esto deberia ir ene l aggregatE?
-        desired += distance;
-
-
-        desired = -desired;
         desired.Normalize();
         desired *= maxForce;
 

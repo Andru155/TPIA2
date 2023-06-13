@@ -98,8 +98,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 2
   maxForce: 130
-  viewRadius: 180.26
+  viewRadius: 180.93
   separationRadius: 56.09
+  _OnRadius: {fileID: 5484507689614247388}
   evadeRadius: 89.7
   collisionRadius: 11.6
   goToFoodRadius: 134.5
