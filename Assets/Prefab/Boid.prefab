@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBox: 0
-  radius: 20
+  radius: 180.93
   targetGrid: {fileID: 2302332091287315701, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
   width: 15
   height: 30

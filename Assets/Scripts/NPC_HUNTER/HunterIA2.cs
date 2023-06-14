@@ -149,6 +149,13 @@ public class HunterIA2 : MonoBehaviour
         chase.OnUpdate += () => GameManager.instance.NPCEnergy -= Time.deltaTime;
 
         chase.OnFixedUpdate += () => AddForce(Pursuit(target));
+        chase.OnFixedUpdate += () => 
+        {
+            if (Vector3.Distance(target.transform.position,transform.position)<1f)           
+               target.Kill();
+          
+            
+        };
 
 
         chase.OnLateUpdate += GetNearestTarget;

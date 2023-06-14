@@ -47,10 +47,13 @@ public class Boid : MonoBehaviour
     private void Update()
     {
         // guardar todos los gameobjects menos a mi mismo y luego preguntar si hay algo?
-        /*
+        
         _OnRadius.selected = _OnRadius.Query()
             .Where(entity => entity.gameObject != this);
-        */
+
+
+        var boids = _OnRadius.selected.Select(entity => entity.GetComponent<Boid>());
+        var food = _OnRadius.selected.SkipWhile(entity => !entity.gameObject.CompareTag("Food")).Select(y=>y.gameObject).FirstOrDefault(x=>x = null);
 
         _distToFood = _food.transform.position - transform.position;
         _distToHunter = _hunter.transform.position - transform.position;
@@ -59,7 +62,7 @@ public class Boid : MonoBehaviour
         {
             //nunca entra aca
             Debug.Log("Hay algo en mi radio");
-            GetNearestFood();
+            GetNearestFood(food);
 
             if (_distToHunter.magnitude <= evadeRadius)
             {
@@ -67,9 +70,9 @@ public class Boid : MonoBehaviour
             }
             else
             {
-                AddForce(Separation() * GameManager.instance.weightSeparation);
-                AddForce(Cohesion() * GameManager.instance.weightCohesion);
-                AddForce(Alignment() * GameManager.instance.weightAlignment);
+                AddForce(Separation(boids) * GameManager.instance.weightSeparation);
+                AddForce(Cohesion(boids) * GameManager.instance.weightCohesion);
+                AddForce(Alignment(boids) * GameManager.instance.weightAlignment);
                 Debug.Log(" Fuera del radio ");
             }
         }
@@ -82,11 +85,11 @@ public class Boid : MonoBehaviour
     //FLOCKING
 
     //IA2-P1
-    void GetNearestFood()
+    void GetNearestFood(GameObject food)
     {
-        var foodOnRadius = _OnRadius.selected.Where(entity => entity.gameObject.CompareTag("Food"));
+        //var foodOnRadius = _OnRadius.selected.Where(entity => entity.gameObject.CompareTag("Food")).First(x=> x= null);
 
-        if (foodOnRadius.Any())
+        if (food != null)
         {
             Debug.Log("Dentro del radio de comida");
             AddForce(Arrive(GameManager.instance.food) * GameManager.instance.weightArrive);
@@ -97,25 +100,25 @@ public class Boid : MonoBehaviour
     }
 
     //IA2-P1
-    Vector3 Alignment()
+    Vector3 Alignment(IEnumerable<Boid> boids)
     {
         //una lista de boids, excluyendo a mi mismo
-        var nearbyBoids = _OnRadius.selected
-       .Where(entity => entity.gameObject != this)
-       .Select(entity => entity.GetComponent<Boid>())
-       .ToList();
+       // var nearbyBoids = _OnRadius.selected
+       //.Where(entity => entity.gameObject != this)
+       //.Select(entity => entity.GetComponent<Boid>())
+       //.ToList();
 
         //si no hay ninguno devuelvo 0 
-        if (!nearbyBoids.Any())
+        if (!boids.Any())
             return Vector3.zero;
 
         //la velocidad deseada sera la suma de las velocidades de los demas boids
-        Vector3 desired = nearbyBoids
+        Vector3 desired = boids
            .Select(boid => boid._velocity)
            .Aggregate(Vector3.zero, (current, velocity) => current + velocity);
 
         //hago el promedio 
-        desired /= nearbyBoids.Count;
+        desired /= boids.Count();
         desired.Normalize();
         desired *= maxForce;
 
@@ -152,27 +155,32 @@ public class Boid : MonoBehaviour
         */
     }
 
+    public void Kill()
+    {
+        GameManager.instance.RemoveFromList(this);
+        Destroy(this);
+    }
     //IA2-P1
-    Vector3 Cohesion()
+    Vector3 Cohesion(IEnumerable<Boid> boids)
     {
         //una lista de boids, excluyendome
-        var nearbyBoids = _OnRadius.selected
-      .Where(entity => entity.gameObject != this)
-      .Select(entity => entity.GetComponent<Boid>())
-      .ToList();
+      //  var nearbyBoids = _OnRadius.selected
+      //.Where(entity => entity.gameObject != this)
+      //.Select(entity => entity.GetComponent<Boid>())
+      //.ToList();
 
         //si no hay ninguno devuelvo 0 
-        if (!nearbyBoids.Any())
+        if (!boids.Any())
             return Vector3.zero;
 
         //sumo las posiciones de los boids
 
-        Vector3 desired = nearbyBoids
+        Vector3 desired = boids
             .Select(boid => boid.transform.position)
             .Aggregate(Vector3.zero, (current, position) => current + position);
 
         //hago el promedio 
-        desired /= nearbyBoids.Count;
+        desired /= boids.Count();
         desired.Normalize();
         desired *= maxForce;
 
@@ -210,25 +218,18 @@ public class Boid : MonoBehaviour
     }
 
     //IA2-P1
-    Vector3 Separation()
+    Vector3 Separation(IEnumerable<Boid> boids)
     {
         Vector3 desired = Vector3.zero;
 
-        var nearbyBoids = _OnRadius.selected
-        .Where(entity => entity.gameObject != this)
-        .Select(entity => entity.GetComponent<Boid>())
-        .ToList();
-
-        var nearbyBoidsInRadius = nearbyBoids
-        .Where(boid => Vector3.Distance(transform.position, boid.transform.position) <= separationRadius)
-        .ToList();
+        var separationBoids = boids.Where(boid => Vector3.Distance(transform.position, boid.transform.position) <= separationRadius);
 
         //si no hay ninguno devuelvo 0 
-        if (!nearbyBoidsInRadius.Any())
+        if (!separationBoids.Any())
             return Vector3.zero;
 
         //saco la distancia de cada boid
-        Vector3 distance = nearbyBoidsInRadius
+        Vector3 distance = separationBoids
             .Select(boid => transform.position - boid.transform.position)
             .Aggregate(Vector3.zero, (current, distance) => current + distance);
 
@@ -313,5 +314,11 @@ public class Boid : MonoBehaviour
 
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(transform.position, evadeRadius);
+    }
+    private void OnValidate()
+    {
+        // lo igualo al radio de vision (el mas grande)
+        _OnRadius.radius = viewRadius;
+        _OnRadius.isBox = false;
     }
 }

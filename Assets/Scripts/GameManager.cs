@@ -47,11 +47,13 @@ public class GameManager : MonoBehaviour
         hunter = Instantiate(hunter, GetRandomLocation(),Quaternion.identity);
         hunter.wpFather = wpFather;
         food = Instantiate(food, GetRandomLocation(), Quaternion.identity);
+        food.GetComponent<GridEntity>().onGrid = true;
         for (int i = 0; i < quantityToSpawn; i++)
         {
            var a = Instantiate(Sample, GetRandomLocation(), Quaternion.identity);
             Debug.Log("spawneo boid");
         }
+        StartCoroutine(CheckList());
     }
 
     public Vector3 GetRandomLocation()
@@ -83,14 +85,15 @@ public class GameManager : MonoBehaviour
 
     //Teletransportador de comida
 
-    public void FoodDrop()
+    public void FoodDrop() => StartCoroutine(FoodSpawn());
+  
+    IEnumerator FoodSpawn()
     {
-        if (food != null)
-        {
-            xPos = Random.Range(-width + 1, width - 1);
-            zPos = Random.Range(-height + 1, height - 1);
-            food.transform.position = new Vector3(xPos, 0, zPos);
-        }
+        food.transform.position = new Vector3(999, 999, 999);
+        yield return new WaitForSeconds(5f);
+        xPos = Random.Range(-width + 1, width - 1);
+        zPos = Random.Range(-height + 1, height - 1);
+        food.transform.position = new Vector3(xPos, 0, zPos);
     }
 
     //Añadir el boid a la lista
@@ -101,7 +104,36 @@ public class GameManager : MonoBehaviour
             boids.Add(b);
         }
     }
+
+    public void RemoveFromList(Boid b)
+    {
+        if (boids.Contains(b))
+        {
+            boids.Remove(b);
+        }
+    }
        
+    IEnumerator CheckList()
+    {
+        while (true)
+        {
+            for (int i = 0; i < 30; i++)
+            {
+                yield return null;
+            }
+            if (boids.Count<quantityToSpawn)
+            {
+                for (int i = 0; i < quantityToSpawn - boids.Count; i++)
+                {
+                    var a = Instantiate(Sample, GetRandomLocation(), Quaternion.identity);
+                    Debug.Log("spawneo boid");
+                    yield return new WaitForSeconds(2f);
+                   
+                }
+            }
+        }
+        
+    }
 
     //Limites del mapa
 
