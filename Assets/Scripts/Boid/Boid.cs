@@ -52,7 +52,7 @@ public class Boid : MonoBehaviour
             .Where(entity => entity.gameObject != this);
 
 
-        var boids = _OnRadius.selected.Select(entity => entity.GetComponent<Boid>());
+        var boids = _OnRadius.selected.Select(entity => entity.GetComponent<Boid>()).Where(x=> x!=null);
         var food = _OnRadius.selected.SkipWhile(entity => !entity.gameObject.CompareTag("Food")).Select(y=>y.gameObject).FirstOrDefault(x=>x = null);
 
         _distToFood = _food.transform.position - transform.position;
