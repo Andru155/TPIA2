@@ -19,6 +19,8 @@ public class HunterIA2 : MonoBehaviour
     #endregion
 
 
+    public GridEntity entity;
+
     public Transform wpFather;
     public Transform[] _waypoints;
     public Boid target;
@@ -33,7 +35,8 @@ public class HunterIA2 : MonoBehaviour
 
     private void Awake()
     {
-        myRadius= GetComponent<Queries>();              
+        myRadius = GetComponent<Queries>();
+        entity = GetComponent<GridEntity>();
 
     }
 
