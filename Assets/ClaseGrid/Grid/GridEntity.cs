@@ -25,7 +25,14 @@ public class GridEntity : MonoBehaviour
 	//}
     public void OnMove(Vector3 velocity)
     {
-        this.velocity = velocity;
+        //color
+        if (onGrid)
+                 _rend.material.color = Color.red;
+           else
+                 _rend.material.color = Color.gray;
+
+
+            this.velocity = velocity;
         OnMoveCallback(this);
     }
 }
