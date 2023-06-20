@@ -55,7 +55,7 @@ public class SpatialGrid : MonoBehaviour
 
         foreach (var e in ents)
         {
-            e.OnMove += UpdateEntity;
+            e.OnMoveCallback += UpdateEntity;
             UpdateEntity(e);
         }
     }
@@ -138,7 +138,7 @@ public class SpatialGrid : MonoBehaviour
     {
         var ents = RecursiveWalker(transform).Select(x => x.GetComponent<GridEntity>()).Where(x => x != null);
         foreach (var e in ents)
-            e.OnMove -= UpdateEntity;
+            e.OnMoveCallback -= UpdateEntity;
     }
 
     #region GENERATORS
