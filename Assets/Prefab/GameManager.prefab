@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2302332091287315703}
-  - component: {fileID: 2302332091287315702}
   - component: {fileID: 2302332091287315701}
+  - component: {fileID: 2302332091287315702}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -32,6 +32,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2302332091287315701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2302332091287315696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b449a4e44df8c45a45d0ed3aa10146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  x: -922.9
+  z: -557.9
+  cellWidth: 92.2
+  cellHeight: 55.6
+  width: 20
+  height: 20
+  AreGizmosShutDown: 0
+  activatedGrid: 0
+  showLogs: 1
 --- !u!114 &2302332091287315702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,24 +82,3 @@ MonoBehaviour:
   grid: {fileID: 2302332091287315701}
   wpFather: {fileID: 0}
   change: 0
---- !u!114 &2302332091287315701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2302332091287315696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92b449a4e44df8c45a45d0ed3aa10146, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  x: -922.9
-  z: -557.9
-  cellWidth: 92.2
-  cellHeight: 55.6
-  width: 20
-  height: 20
-  AreGizmosShutDown: 0
-  activatedGrid: 0
-  showLogs: 1

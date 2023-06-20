@@ -23,6 +23,7 @@ public class Boid : MonoBehaviour
     GameObject _food;
     Vector3 _distToFood;
 
+    GridEntity myEntity;
 
     public float collisionRadius;
     public float goToFoodRadius;
@@ -31,6 +32,8 @@ public class Boid : MonoBehaviour
 
     private void Start()
     {
+        myEntity = transform.GetComponent<GridEntity>();
+
         _npc = new NPC();
         _hunter = GameManager.instance.hunter.gameObject;
         _food = GameManager.instance.food;
@@ -81,7 +84,7 @@ public class Boid : MonoBehaviour
         }
 
         transform.position += _velocity * Time.deltaTime;
-        transform.forward = _velocity;
+        myEntity.OnMove(_velocity);
         transform.position = GameManager.instance.ApplyBound(transform.position);
     }
 
