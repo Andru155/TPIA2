@@ -44,6 +44,22 @@ public class HunterIA2 : MonoBehaviour
     {
         _waypoints = wpFather.GetComponentsInChildren<Transform>();
         SetPatrol(); SetChase(); SetIdle();
+
+        StateConfigurer.Create(idle)
+       .SetTransition(HunterStates.PATROL, patrol)
+       .SetTransition(HunterStates.CHASE, chase)
+       .Done();
+
+        StateConfigurer.Create(patrol)
+          .SetTransition(HunterStates.IDLE, idle)
+          .SetTransition(HunterStates.CHASE, chase)
+          .Done();
+
+        StateConfigurer.Create(chase)
+           .SetTransition(HunterStates.IDLE, idle)
+           .SetTransition(HunterStates.PATROL, patrol)
+           .Done();
+
         _fsm = new EventFSM<HunterStates>(idle);
     }
 
@@ -51,10 +67,7 @@ public class HunterIA2 : MonoBehaviour
     {
         idle = new State<HunterStates>("Idle");
 
-        StateConfigurer.Create(idle)
-        .SetTransition(HunterStates.PATROL, patrol)
-        .SetTransition(HunterStates.CHASE, chase)
-        .Done();
+       
 
         
         idle.OnEnter += (x) => Debug.Log("entre a idle");
@@ -79,20 +92,23 @@ public class HunterIA2 : MonoBehaviour
     #region PatrolSet
     void SetPatrol()
     {
-        var patrolTransitions = new Dictionary<HunterStates, Transition<HunterStates>>
-        {
-            { HunterStates.IDLE,  new Transition<HunterStates>(HunterStates.IDLE, idle) },
-            { HunterStates.CHASE, new Transition<HunterStates>(HunterStates.CHASE, chase) }
-        };
+        
 
         patrol = new State<HunterStates>("Patrol");
 
-        StateConfigurer.Create(patrol)
-            .SetTransition(HunterStates.IDLE, idle)
-            .SetTransition(HunterStates.CHASE,chase)
-            .Done();
+      
 
-        patrol.OnUpdate += GetNearestTarget;
+        patrol.OnUpdate += () =>
+        {
+            IEnumerable<Boid> boids = myRadius.Query()
+            .Select(x=>x.GetComponent<Boid>())
+            .Where(x=>x!=null);
+            if (boids.Any())
+            {
+                GetNearestTarget(boids);
+            }
+           
+        };
 
         patrol.OnFixedUpdate += PatrolDir; 
 
@@ -130,6 +146,7 @@ public class HunterIA2 : MonoBehaviour
 
             if (dist.magnitude <= myRadius.radius + lossRadius && GameManager.instance.NPCEnergy >= 0)
             {
+                Debug.Log("entro a chase");
                 _fsm.SendInput(HunterStates.CHASE);
             }
         }
@@ -141,10 +158,7 @@ public class HunterIA2 : MonoBehaviour
     {
         chase = new State<HunterStates>("Chase");
 
-        StateConfigurer.Create(chase)
-            .SetTransition(HunterStates.IDLE, idle)
-            .SetTransition(HunterStates.PATROL, patrol)
-            .Done();
+       
 
         chase.OnEnter += (x) => { Debug.Log("entro a chase"); };
 
@@ -155,13 +169,21 @@ public class HunterIA2 : MonoBehaviour
         chase.OnFixedUpdate += () => 
         {
             if (Vector3.Distance(target.transform.position,transform.position)<1f)           
-               target.Kill();
-          
-            
+               target.Kill();          
         };
 
 
-        chase.OnLateUpdate += GetNearestTarget;
+        chase.OnLateUpdate += () =>
+        {
+
+            IEnumerable<Boid> boids = myRadius.Query()
+            .Select(x => x.GetComponent<Boid>())
+            .Where(x => x != null);
+            if (boids.Any())
+            {
+                GetNearestTarget(boids);
+            }
+        };
 
         chase.OnLateUpdate += () =>
         {
@@ -213,20 +235,24 @@ public class HunterIA2 : MonoBehaviour
     public void AddForce(Vector3 force)
     {
         _velocity = Vector3.ClampMagnitude(_velocity + force, maxSpeed);
+        transform.position += _velocity * Time.deltaTime;
+        transform.forward = _velocity;
+        entity.OnMove(_velocity);
     }
 
 
     //IA2-P1
-    void GetNearestTarget()
+    void GetNearestTarget(IEnumerable<Boid> boids)
     {
-        Debug.Log(myRadius.selected);
-        if (myRadius.selected.Any())
+      
+
+
+        if (boids.Any())
         {
-            target = myRadius.selected
-            .Select(x => x.GetComponent<Boid>())
-            .Where(x => x != null)
+
+            target = boids                  
             .OrderBy(x => Vector3.Distance(x.transform.position, transform.position))
-            .FirstOrDefault(null);
+            .First();
          
         }
         else

@@ -215,6 +215,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   velocity: {x: 0, y: 0, z: 0}
   onGrid: 1
+  OnGridColor: {r: 0, g: 1, b: 0.012152195, a: 0}
+  notOnGridColor: {r: 0, g: 0.9400835, b: 1, a: 0}
 --- !u!114 &5484507689614247388
 MonoBehaviour:
   m_ObjectHideFlags: 0

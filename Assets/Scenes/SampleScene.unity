@@ -504,6 +504,10 @@ PrefabInstance:
       propertyPath: wpFather
       value: 
       objectReference: {fileID: 3729548990227568199}
+    - target: {fileID: 2302332091287315702, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
+      propertyPath: quantityToSpawn
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 2302332091287315703, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
       propertyPath: m_RootOrder
       value: 1

@@ -84,7 +84,7 @@ public class Boid : MonoBehaviour
         }
 
         transform.position += _velocity * Time.deltaTime;
-        myEntity.OnMove(_velocity);
+       
         transform.position = GameManager.instance.ApplyBound(transform.position);
     }
 
@@ -303,6 +303,8 @@ public class Boid : MonoBehaviour
     void AddForce(Vector3 force)
     {
         _velocity = Vector3.ClampMagnitude(_velocity + force, maxForce);
+        transform.forward= _velocity.normalized;
+        myEntity.OnMove(_velocity);
     }
 
     private void OnDrawGizmos()

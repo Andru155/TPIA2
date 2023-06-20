@@ -137,7 +137,7 @@ public class SpatialGrid : MonoBehaviour
     void OnDestroy()
     {
         var ents = RecursiveWalker(transform).Select(x => x.GetComponent<GridEntity>()).Where(x => x != null);
-        foreach (var ent in ents) {Debug.Log(ent); }
+       
         foreach (var e in ents)
             e.OnMoveCallback -= UpdateEntity;
     }

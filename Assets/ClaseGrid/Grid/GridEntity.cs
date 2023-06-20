@@ -9,30 +9,20 @@ public class GridEntity : MonoBehaviour
     public bool onGrid;
     Renderer _rend;
 
+    public Color OnGridColor, notOnGridColor;
     private void Awake()
     {
         _rend = GetComponent<Renderer>();
-    }   
+    }
 
- //   void Update() {
- //       if (onGrid)
- //           _rend.material.color = Color.red;
- //       else
- //           _rend.material.color = Color.gray;
-	//	//Optimization: Hacer esto solo cuando realmente se mueve y no en el update
-	//	transform.position += velocity * Time.deltaTime;
-	//    OnMove(this);
-	//}
+    private void LateUpdate()
+    {
+        _rend.material.color = onGrid ? OnGridColor : notOnGridColor;
+    }
+   
     public void OnMove(Vector3 velocity)
     {
-        //color
-        if (onGrid)
-                 _rend.material.color = Color.red;
-           else
-                 _rend.material.color = Color.gray;
-
-
-            this.velocity = velocity;
+        this.velocity = velocity;
         OnMoveCallback(this);
     }
 }
