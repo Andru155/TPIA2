@@ -47,10 +47,13 @@ public class Boid : MonoBehaviour
     private void Update()
     {
         // guardar todos los gameobjects menos a mi mismo y luego preguntar si hay algo?
-        
-        _OnRadius.selected = _OnRadius.Query()
-            .Where(entity => entity.gameObject != this);
 
+        _OnRadius.selected = _OnRadius.Query().Where(entity => entity.gameObject != this);
+
+        if (_OnRadius.selected.Any())
+        {
+            Debug.Log("T");
+        }
 
         var boids = _OnRadius.selected.Select(entity => entity.GetComponent<Boid>()).Where(x=> x!=null);
         var food = _OnRadius.selected.SkipWhile(entity => !entity.gameObject.CompareTag("Food")).Select(y=>y.gameObject).FirstOrDefault(x=>x = null);
