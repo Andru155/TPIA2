@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
             a.transform.parent = this.transform;
         }
         StartCoroutine(CheckList());
+        grid.ArtificialAwake();
     }
 
     public Vector3 GetRandomLocation()
