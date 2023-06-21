@@ -502,11 +502,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2302332091287315702, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
       propertyPath: width
-      value: 1012
+      value: 924
       objectReference: {fileID: 0}
     - target: {fileID: 2302332091287315702, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
       propertyPath: height
-      value: 644
+      value: 557
       objectReference: {fileID: 0}
     - target: {fileID: 2302332091287315702, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
       propertyPath: wpFather
