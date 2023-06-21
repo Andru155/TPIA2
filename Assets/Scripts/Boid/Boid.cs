@@ -22,7 +22,7 @@ public class Boid : MonoBehaviour
     Vector3 _distToHunter;
     Vector3 _distToFood;
 
-    GridEntity myEntity;
+   public GridEntity myEntity;
 
     public float collisionRadius;
     public float goToFoodRadius;
@@ -46,13 +46,10 @@ public class Boid : MonoBehaviour
     private void Update()
     {
         // guardar todos los gameobjects menos a mi mismo y luego preguntar si hay algo?
-
+         //IA2-P1
         _OnRadius.selected = _OnRadius.Query().Where(entity => entity.gameObject != this);
 
-        if (_OnRadius.selected.Any())
-        {
-            Debug.Log("Hay algo dentro del Query BOID");
-        }
+      
 
         var boids = _OnRadius.selected.Select(entity => entity.GetComponent<Boid>()).Where(x => x != null);
         var food = _OnRadius.selected.SkipWhile(entity => !entity.gameObject.CompareTag("Food")).Select(y => y.gameObject).FirstOrDefault(x => x = null);
@@ -67,6 +64,7 @@ public class Boid : MonoBehaviour
                 Debug.Log("BOID: Hay comida en mi radio");
                 _distToFood = food.transform.position - transform.position;
                 GetNearestFood(food);
+                return;
             }
 
             if (_hunterIA != null)
@@ -79,20 +77,28 @@ public class Boid : MonoBehaviour
                 {
                     Debug.Log("BOID: el hunter esta en mi radio de evasion");
                     AddForce(Evade(_hunterIA) * GameManager.instance.weightEvade);
+                    return;
                 }
-                else if(boids != null)
+                else if (boids.Any())
                 {
-                    AddForce(Separation(boids) * GameManager.instance.weightSeparation);
-                    AddForce(Cohesion(boids) * GameManager.instance.weightCohesion);
-                    AddForce(Alignment(boids) * GameManager.instance.weightAlignment);
-                    Debug.Log(" BOID: Fuera del radio del hunter ");
+                    Vector3 actualForce = Vector3.zero;
+                    actualForce += Separation(boids) * GameManager.instance.weightSeparation;
+                    actualForce += Cohesion(boids) * GameManager.instance.weightCohesion;
+                    actualForce  += Alignment(boids) * GameManager.instance.weightAlignment;
+                    AddForce(actualForce);
+                    //Debug.Log(" BOID: Fuera del radio del hunter ,hago flocking con "+ boids.Count());
+                    return;
                 }
             }
         }
 
-        transform.position += _velocity * Time.deltaTime;
+        Debug.Log("Boid:Añado fuerza hacia adelante");
+            AddForce(transform.forward * maxForce);
+        
 
-        transform.position = GameManager.instance.ApplyBound(transform.position);
+        
+
+       
     }
 
     //FLOCKING
@@ -172,7 +178,8 @@ public class Boid : MonoBehaviour
     public void Kill()
     {
         GameManager.instance.RemoveFromList(this);
-        Destroy(this);
+        
+        Destroy(this.gameObject);
     }
     //IA2-P1
     Vector3 Cohesion(IEnumerable<Boid> boids)
@@ -234,9 +241,11 @@ public class Boid : MonoBehaviour
     //IA2-P1
     Vector3 Separation(IEnumerable<Boid> boids)
     {
-        Vector3 desired = Vector3.zero;
+      
 
         var separationBoids = boids.Where(boid => Vector3.Distance(transform.position, boid.transform.position) <= separationRadius);
+
+        
 
         //si no hay ninguno devuelvo 0 
         if (!separationBoids.Any())
@@ -244,16 +253,20 @@ public class Boid : MonoBehaviour
 
         //saco la distancia de cada boid
         Vector3 distance = separationBoids
-            .Select(boid => transform.position - boid.transform.position)
+            .Select(boid => boid.transform.position-transform.position)
             .Aggregate(Vector3.zero, (current, distance) => current + distance);
+        distance = - distance;
 
+        if (distance == Vector3.zero) return Vector3.zero;
+       
+        distance.Normalize();
+        distance *= maxForce;
+        Debug.Log("distance>0");
+        return CalculatedSteering(distance);
         //esto me olvide pq era lo dejo porlas
         //desired = -desired;
 
-        desired.Normalize();
-        desired *= maxForce;
 
-        return CalculatedSteering(desired);
 
 
         /*
@@ -312,12 +325,18 @@ public class Boid : MonoBehaviour
     void AddForce(Vector3 force)
     {
         _velocity = Vector3.ClampMagnitude(_velocity + force, maxForce);
+        transform.position += _velocity * Time.deltaTime;
         transform.forward = _velocity.normalized;
+        transform.position = GameManager.instance.ApplyBound(transform.position);
         myEntity.OnMove(_velocity);
     }
 
     private void OnDrawGizmos()
     {
+        if (!Application.isPlaying) return;
+
+        if (!GameManager.instance.BoidGizmos) return;
+       
         Gizmos.DrawWireSphere(transform.position, viewRadius);
 
         Gizmos.color = Color.green;
@@ -334,6 +353,7 @@ public class Boid : MonoBehaviour
     }
     private void OnValidate()
     {
+        if (Application.isPlaying) return;
         // lo igualo al radio de vision (el mas grande)
         _OnRadius.radius = viewRadius;
         _OnRadius.isBox = false;

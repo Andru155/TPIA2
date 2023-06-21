@@ -194,13 +194,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 2
   maxForce: 130
-  viewRadius: 180.93
-  separationRadius: 56.09
+  viewRadius: 120
+  separationRadius: 50
   _OnRadius: {fileID: 5484507689614247388}
-  evadeRadius: 89.7
+  evadeRadius: 30
   _hunterIA: {fileID: 8015750875834488118, guid: c31dd330bc45bc148a5434245b94962f, type: 3}
+  myEntity: {fileID: 0}
   collisionRadius: 18.8
-  goToFoodRadius: 134.5
+  goToFoodRadius: 154.2
   _velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &8041177283750744868
 MonoBehaviour:
@@ -231,7 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBox: 0
-  radius: 180.93
+  radius: 120
   targetGrid: {fileID: 2302332091287315701, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
   width: 15
   height: 30

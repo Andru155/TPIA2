@@ -18,7 +18,7 @@ public class HunterIA2 : MonoBehaviour
     State<HunterStates> chase;
     #endregion
 
-
+    //IA2-P3
     public GridEntity entity;
 
     public Transform wpFather;
@@ -168,8 +168,12 @@ public class HunterIA2 : MonoBehaviour
         chase.OnFixedUpdate += () => AddForce(Pursuit(target));
         chase.OnFixedUpdate += () => 
         {
-            if (Vector3.Distance(target.transform.position,transform.position)<1f)           
-               target.Kill();          
+            if (Vector3.Distance(target.transform.position,transform.position)<1f)
+            {
+                target.Kill();
+                target = null;
+            }         
+                     
         };
 
 
@@ -179,19 +183,33 @@ public class HunterIA2 : MonoBehaviour
             IEnumerable<Boid> boids = myRadius.Query()
             .Select(x => x.GetComponent<Boid>())
             .Where(x => x != null);
-            if (boids.Any())
+            if (boids.Count()>0)
             {
                 GetNearestTarget(boids);
+                
             }
+
+            if (target != null)
+            {
+                if (Vector3.Distance(target.transform.position,transform.position) <= myRadius.radius)
+                {
+                    return;
+                }
+            }
+
+            if (GameManager.instance.NPCEnergy > 0)
+            {
+                _fsm.SendInput(HunterStates.PATROL);
+            }
+            else if (GameManager.instance.NPCEnergy <= 0)
+            {
+                _fsm.SendInput(HunterStates.IDLE);
+            }
+
+
         };
 
-        chase.OnLateUpdate += () =>
-        {
-            if (GameManager.instance.NPCEnergy <= 0)
-                _fsm.SendInput(HunterStates.IDLE);
-            else if (target == null && GameManager.instance.NPCEnergy > 0)
-                _fsm.SendInput(HunterStates.PATROL);
-        };
+       
 
         chase.OnExit += (x) => { Debug.Log("salgo de chase, voy a "+x); };
 

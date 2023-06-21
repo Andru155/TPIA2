@@ -50,6 +50,7 @@ public class Queries : MonoBehaviour
 
     void OnDrawGizmos()
     {
+
         if (targetGrid == null)
             return;
 

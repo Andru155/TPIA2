@@ -59,9 +59,44 @@ public class SpatialGrid : MonoBehaviour
             UpdateEntity(e);
         }
     }
+    //IA2-P2
+    #region update Grid
+    public void UpdateGrid()
+    {
+        var ents = RecursiveWalker(transform)
+           .Select(x => x.GetComponent<GridEntity>())
+           .Where(x => x != null);
+
+        foreach (var e in ents)
+        {
+            e.OnMoveCallback += UpdateEntity;
+            UpdateEntity(e);
+        }
+        Debug.Log($"hay{ents.Count()} entidades en la grilla");
+    }
+
+    public void AddEntity(GridEntity e)
+    {
+        e.OnMoveCallback += UpdateEntity;
+        UpdateEntity(e);
+        Debug.Log($"meto a {e} en la grilla");
+    }
+    public void RemoveEntity(GridEntity e)
+    {
+        e.OnMoveCallback -= UpdateEntity;
+        UpdateEntity(e);
+        Debug.Log($"saco a {e} de la grilla");
+
+
+    }
+    #endregion
 
     public void UpdateEntity(GridEntity entity)
     {
+        if (entity == null) return;
+        
+
+        
         var lastPos = lastPositions.ContainsKey(entity) ? lastPositions[entity] : Outside;
         var currentPos = GetPositionInGrid(entity.gameObject.transform.position);
 
@@ -113,7 +148,7 @@ public class SpatialGrid : MonoBehaviour
 
         // Iteramos las que queden dentro del criterio
         return cells
-            .SelectMany(cell => buckets[cell.Item1, cell.Item2])
+            .SelectMany(cell => buckets[cell.Item1, cell.Item2]).Where(x=>x!=null)
             .Where(e =>
                 from.x <= e.transform.position.x && e.transform.position.x <= to.x &&
                 from.z <= e.transform.position.z && e.transform.position.z <= to.z
@@ -220,9 +255,9 @@ public class SpatialGrid : MonoBehaviour
             int connections = 0;
             foreach (var elem in buckets)
             {
-                foreach(var ent in elem)
+                foreach(var ent in elem.Where(x => x != null))
                 {
-                    foreach (var n in elem.Where(x => x != ent))
+                    foreach (var n in elem.Where(x => x != null).Where(x => x != ent))
                     {
                         Gizmos.DrawLine(ent.transform.position, n.transform.position);
                         connections++;

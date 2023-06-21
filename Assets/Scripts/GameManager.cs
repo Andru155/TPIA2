@@ -8,8 +8,8 @@ public class GameManager : MonoBehaviour
 {
     [NonSerialized] public List<Boid> boids = new List<Boid>();
     public GameObject food;
-    public HunterIA2 hunter;   
-
+    public HunterIA2 hunter;
+    public bool BoidGizmos;
     public float NPCEnergy;
 
     public float xPos;
@@ -33,8 +33,8 @@ public class GameManager : MonoBehaviour
     [Range(0, 3)]
     public float weightEvade = 1;
 
-    public int width;
-    public int height;
+    public float width;
+    public float height;
 
    public SpatialGrid grid;
 
@@ -48,13 +48,16 @@ public class GameManager : MonoBehaviour
         hunter.wpFather = wpFather;
         hunter.transform.parent = this.transform;
         food = Instantiate(food, GetRandomLocation(), Quaternion.identity);
-        food.GetComponent<GridEntity>().onGrid = true;
+        food.transform.parent = transform;
+      
         for (int i = 0; i < quantityToSpawn; i++)
         {
            var a = Instantiate(Sample, GetRandomLocation(), Quaternion.identity);
             Debug.Log("spawneo boid");
             a.transform.parent = this.transform;
         }
+
+        //IA2 - P2
         StartCoroutine(CheckList());
         grid.ArtificialAwake();
     }
@@ -101,11 +104,16 @@ public class GameManager : MonoBehaviour
     }
 
     //Añadir el boid a la lista
+
+    //IA2 - P2
+    #region ListBoids
+
     public void AddToList(Boid b)
     {
         if (!boids.Contains(b))
         {
             boids.Add(b);
+            grid.UpdateGrid();
         }
     }
 
@@ -114,9 +122,12 @@ public class GameManager : MonoBehaviour
         if (boids.Contains(b))
         {
             boids.Remove(b);
+            grid.RemoveEntity(b.myEntity);
+            grid.UpdateGrid();
         }
     }
-       
+
+ 
     IEnumerator CheckList()
     {
         while (true)
@@ -138,6 +149,7 @@ public class GameManager : MonoBehaviour
         }
         
     }
+    #endregion
 
     //Limites del mapa
 
