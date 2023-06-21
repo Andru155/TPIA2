@@ -395,7 +395,7 @@ Camera:
   far clip plane: 1000
   field of view: 34.068794
   orthographic: 1
-  orthographic size: 293.26926
+  orthographic size: 589.69
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -419,7 +419,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 6, y: 985, z: -1}
+  m_LocalPosition: {x: 6, y: 985, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -499,6 +499,14 @@ PrefabInstance:
     - target: {fileID: 2302332091287315701, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
       propertyPath: activatedGrid
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2302332091287315702, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
+      propertyPath: width
+      value: 1012
+      objectReference: {fileID: 0}
+    - target: {fileID: 2302332091287315702, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
+      propertyPath: height
+      value: 644
       objectReference: {fileID: 0}
     - target: {fileID: 2302332091287315702, guid: 13a444fae66d62748b8f6380ba84e852, type: 3}
       propertyPath: wpFather
