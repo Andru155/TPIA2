@@ -262,4 +262,9 @@ public class HunterIA2 : MonoBehaviour
 
     }
     #endregion
+
+    public Vector3 Velocity
+    {
+        get { return _velocity; }
+    }
 }

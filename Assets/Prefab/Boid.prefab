@@ -198,7 +198,8 @@ MonoBehaviour:
   separationRadius: 56.09
   _OnRadius: {fileID: 5484507689614247388}
   evadeRadius: 89.7
-  collisionRadius: 11.6
+  _hunterIA: {fileID: 8015750875834488118, guid: c31dd330bc45bc148a5434245b94962f, type: 3}
+  collisionRadius: 18.8
   goToFoodRadius: 134.5
   _velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &8041177283750744868

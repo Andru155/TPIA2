@@ -71,12 +71,12 @@ MonoBehaviour:
   xPos: 0
   zPos: 0
   Sample: {fileID: 8194739393048233467, guid: e3bcceb5016025045886b4570a3dff42, type: 3}
-  quantityToSpawn: 10
-  weightSeparation: 1.2
+  quantityToSpawn: 90
+  weightSeparation: 1.18
   weightCohesion: 0.67
-  weightAlignment: 0.88
-  weightArrive: 0.25
-  weightEvade: 0.69
+  weightAlignment: 1.65
+  weightArrive: 0.52
+  weightEvade: 1.1
   width: 923
   height: 558
   grid: {fileID: 2302332091287315701}

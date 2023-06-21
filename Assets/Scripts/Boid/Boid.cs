@@ -15,12 +15,11 @@ public class Boid : MonoBehaviour
     [SerializeField] Queries _OnRadius;
 
     public float evadeRadius;
+
+    [SerializeField] HunterIA2 _hunterIA;
+
+
     Vector3 _distToHunter;
-    GameObject _hunter;
-
-    NPC _npc;
-
-    GameObject _food;
     Vector3 _distToFood;
 
     GridEntity myEntity;
@@ -28,15 +27,12 @@ public class Boid : MonoBehaviour
     public float collisionRadius;
     public float goToFoodRadius;
 
-    public Vector3 _velocity; 
+    public Vector3 _velocity;
 
     private void Start()
     {
-        myEntity = transform.GetComponent<GridEntity>();
+        myEntity = transform.GetComponent<GridEntity>();     
 
-        _npc = new NPC();
-        _hunter = GameManager.instance.hunter.gameObject;
-        _food = GameManager.instance.food;
         Vector3 randomDir = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized * maxForce;
         AddForce(randomDir);
 
@@ -55,36 +51,47 @@ public class Boid : MonoBehaviour
 
         if (_OnRadius.selected.Any())
         {
-            Debug.Log("T");
+            Debug.Log("Hay algo dentro del Query BOID");
         }
 
-        var boids = _OnRadius.selected.Select(entity => entity.GetComponent<Boid>()).Where(x=> x!=null);
-        var food = _OnRadius.selected.SkipWhile(entity => !entity.gameObject.CompareTag("Food")).Select(y=>y.gameObject).FirstOrDefault(x=>x = null);
+        var boids = _OnRadius.selected.Select(entity => entity.GetComponent<Boid>()).Where(x => x != null);
+        var food = _OnRadius.selected.SkipWhile(entity => !entity.gameObject.CompareTag("Food")).Select(y => y.gameObject).FirstOrDefault(x => x = null);
 
-        _distToFood = _food.transform.position - transform.position;
-        _distToHunter = _hunter.transform.position - transform.position;
 
         if (_OnRadius.selected.Any())
         {
-            //nunca entra aca
-            Debug.Log("Hay algo en mi radio");
-            GetNearestFood(food);
 
-            if (_distToHunter.magnitude <= evadeRadius)
+            Debug.Log("Hay algo en mi radio BOID");
+            if (food != null)
             {
-                AddForce(Evade(GameManager.instance.hunter.gameObject, _npc) * GameManager.instance.weightEvade);
+                Debug.Log("BOID: Hay comida en mi radio");
+                _distToFood = food.transform.position - transform.position;
+                GetNearestFood(food);
             }
-            else
+
+            if (_hunterIA != null)
             {
-                AddForce(Separation(boids) * GameManager.instance.weightSeparation);
-                AddForce(Cohesion(boids) * GameManager.instance.weightCohesion);
-                AddForce(Alignment(boids) * GameManager.instance.weightAlignment);
-                Debug.Log(" Fuera del radio ");
+
+                Debug.Log("BOID:El hunter es distinto de null");
+               _distToHunter = _hunterIA.transform.position - transform.position;
+
+                if (_distToHunter.magnitude <= evadeRadius)
+                {
+                    Debug.Log("BOID: el hunter esta en mi radio de evasion");
+                    AddForce(Evade(_hunterIA) * GameManager.instance.weightEvade);
+                }
+                else if(boids != null)
+                {
+                    AddForce(Separation(boids) * GameManager.instance.weightSeparation);
+                    AddForce(Cohesion(boids) * GameManager.instance.weightCohesion);
+                    AddForce(Alignment(boids) * GameManager.instance.weightAlignment);
+                    Debug.Log(" BOID: Fuera del radio del hunter ");
+                }
             }
         }
 
         transform.position += _velocity * Time.deltaTime;
-       
+
         transform.position = GameManager.instance.ApplyBound(transform.position);
     }
 
@@ -95,24 +102,25 @@ public class Boid : MonoBehaviour
     {
         //var foodOnRadius = _OnRadius.selected.Where(entity => entity.gameObject.CompareTag("Food")).First(x=> x= null);
 
-        if (food != null)
-        {
-            Debug.Log("Dentro del radio de comida");
-            AddForce(Arrive(GameManager.instance.food) * GameManager.instance.weightArrive);
+        Debug.Log("BOID: Dentro del radio de comida");
+        AddForce(Arrive(food) * GameManager.instance.weightArrive);
 
-            if (_distToFood.magnitude <= collisionRadius)
-                GameManager.instance.FoodDrop();
+        if (_distToFood.magnitude <= collisionRadius)
+        {
+            Debug.Log("BOID: la distancia de un boid con la comida es menor al radio de collision. Dberia pasar el FoodDrop");
+            GameManager.instance.FoodDrop();
         }
+
     }
 
     //IA2-P1
     Vector3 Alignment(IEnumerable<Boid> boids)
     {
         //una lista de boids, excluyendo a mi mismo
-       // var nearbyBoids = _OnRadius.selected
-       //.Where(entity => entity.gameObject != this)
-       //.Select(entity => entity.GetComponent<Boid>())
-       //.ToList();
+        // var nearbyBoids = _OnRadius.selected
+        //.Where(entity => entity.gameObject != this)
+        //.Select(entity => entity.GetComponent<Boid>())
+        //.ToList();
 
         //si no hay ninguno devuelvo 0 
         if (!boids.Any())
@@ -170,10 +178,10 @@ public class Boid : MonoBehaviour
     Vector3 Cohesion(IEnumerable<Boid> boids)
     {
         //una lista de boids, excluyendome
-      //  var nearbyBoids = _OnRadius.selected
-      //.Where(entity => entity.gameObject != this)
-      //.Select(entity => entity.GetComponent<Boid>())
-      //.ToList();
+        //  var nearbyBoids = _OnRadius.selected
+        //.Where(entity => entity.gameObject != this)
+        //.Select(entity => entity.GetComponent<Boid>())
+        //.ToList();
 
         //si no hay ninguno devuelvo 0 
         if (!boids.Any())
@@ -284,9 +292,10 @@ public class Boid : MonoBehaviour
 
     //EVADIR EL NPC
 
-    Vector3 Evade(GameObject h, NPC hunter)
+    Vector3 Evade(HunterIA2 hunter)
     {
-        Vector3 finalPos = h.transform.position + hunter.Velocity * Time.deltaTime;
+
+        Vector3 finalPos = hunter.gameObject.transform.position + hunter.Velocity * Time.deltaTime;
         Vector3 desired = transform.position - finalPos;
         desired.Normalize();
         desired *= maxForce;
@@ -303,7 +312,7 @@ public class Boid : MonoBehaviour
     void AddForce(Vector3 force)
     {
         _velocity = Vector3.ClampMagnitude(_velocity + force, maxForce);
-        transform.forward= _velocity.normalized;
+        transform.forward = _velocity.normalized;
         myEntity.OnMove(_velocity);
     }
 
