@@ -9,7 +9,7 @@ public class HunterIA2 : MonoBehaviour
     #region FiniteStateMachine
     public enum HunterStates
     {
-        IDLE,PATROL,CHASE
+        IDLE, PATROL, CHASE
     }
     public EventFSM<HunterStates> _fsm;
 
@@ -28,8 +28,8 @@ public class HunterIA2 : MonoBehaviour
     public Vector3 _velocity;
 
     public int _nextPos = 0;
-    public float speed,maxSpeed,steeringForce;
-    [SerializeField]float lossRadius;
+    public float speed, maxSpeed, steeringForce;
+    [SerializeField] float lossRadius;
 
     Queries myRadius;
 
@@ -67,9 +67,9 @@ public class HunterIA2 : MonoBehaviour
     {
         idle = new State<HunterStates>("Idle");
 
-       
 
-        
+
+
         idle.OnEnter += (x) => Debug.Log("entre a idle");
 
         idle.OnUpdate += () => GameManager.instance.NPCEnergy += Time.deltaTime;
@@ -86,36 +86,36 @@ public class HunterIA2 : MonoBehaviour
         };
 
         idle.OnEnter += (x) => Debug.Log("sali de idle");
-        
+
     }
 
     #region PatrolSet
     void SetPatrol()
     {
-        
+
 
         patrol = new State<HunterStates>("Patrol");
 
-      
+
 
         patrol.OnUpdate += () =>
         {
             IEnumerable<Boid> boids = myRadius.Query()
-            .Select(x=>x.GetComponent<Boid>())
-            .Where(x=>x!=null);
+            .Select(x => x.GetComponent<Boid>())
+            .Where(x => x != null);
             if (boids.Any())
             {
                 GetNearestTarget(boids);
             }
-           
+
         };
 
-        patrol.OnFixedUpdate += PatrolDir; 
+        patrol.OnFixedUpdate += PatrolDir;
 
         patrol.OnLateUpdate += ChangeStateFromPatrol;
     }
 
-    
+
     public void PatrolDir()
     {
         var dir = _waypoints[_nextPos].position - transform.position;
@@ -132,10 +132,10 @@ public class HunterIA2 : MonoBehaviour
         }
     }
 
-  
+
     void ChangeStateFromPatrol()
     {
-       
+
 
         if (GameManager.instance.NPCEnergy <= 0)
             _fsm.SendInput(HunterStates.IDLE);
@@ -158,7 +158,7 @@ public class HunterIA2 : MonoBehaviour
     {
         chase = new State<HunterStates>("Chase");
 
-       
+
 
         chase.OnEnter += (x) => { Debug.Log("entro a chase"); };
 
@@ -166,14 +166,17 @@ public class HunterIA2 : MonoBehaviour
         chase.OnUpdate += () => GameManager.instance.NPCEnergy -= Time.deltaTime;
 
         chase.OnFixedUpdate += () => AddForce(Pursuit(target));
-        chase.OnFixedUpdate += () => 
+        chase.OnFixedUpdate += () =>
         {
-            if (Vector3.Distance(target.transform.position,transform.position)<1f)
+            if (target != null)
             {
-                target.Kill();
-                target = null;
-            }         
-                     
+                if (Vector3.Distance(target.transform.position, transform.position) < 1f)
+                {
+                    target.Kill();
+                    target = null;
+                }
+            }
+
         };
 
 
@@ -186,12 +189,12 @@ public class HunterIA2 : MonoBehaviour
             if (boids.Any())
             {
                 GetNearestTarget(boids);
-                
+
             }
 
             if (target != null)
             {
-                if (Vector3.Distance(target.transform.position,transform.position) <= myRadius.radius)
+                if (Vector3.Distance(target.transform.position, transform.position) <= myRadius.radius)
                 {
                     return;
                 }
@@ -209,9 +212,9 @@ public class HunterIA2 : MonoBehaviour
 
         };
 
-       
 
-        chase.OnExit += (x) => { Debug.Log("salgo de chase, voy a "+x); };
+
+        chase.OnExit += (x) => { Debug.Log("salgo de chase, voy a " + x); };
 
     }
 
@@ -235,7 +238,7 @@ public class HunterIA2 : MonoBehaviour
     {
         Debug.Log(actualTarget);
         if (actualTarget == null) return Vector3.zero;
-        
+
         Vector3 finalPos = actualTarget.transform.position + actualTarget._velocity * Time.fixedDeltaTime;
 
         Vector3 desired = finalPos - transform.position;
@@ -264,16 +267,16 @@ public class HunterIA2 : MonoBehaviour
     //IA2-P1
     void GetNearestTarget(IEnumerable<Boid> boids)
     {
-      
+
 
 
         if (boids.Any())
         {
 
-            target = boids                  
+            target = boids
             .OrderBy(x => Vector3.Distance(x.transform.position, transform.position))
             .First();
-         
+
         }
         else
         {
