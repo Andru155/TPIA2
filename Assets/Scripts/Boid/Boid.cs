@@ -29,9 +29,9 @@ public class Boid : MonoBehaviour
 
     public Vector3 _velocity;
 
-    private void Start()
+    private void Awake()
     {
-        myEntity = transform.GetComponent<GridEntity>();     
+        myEntity = transform.GetComponent<GridEntity>();
 
         Vector3 randomDir = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized * maxForce;
         AddForce(randomDir);
@@ -40,7 +40,11 @@ public class Boid : MonoBehaviour
         _OnRadius.radius = viewRadius;
         _OnRadius.isBox = false;
 
-        GameManager.instance.AddToList(this);
+        
+    }
+    private void Start()
+    {
+        
     }
 
     private void Update()
@@ -52,6 +56,9 @@ public class Boid : MonoBehaviour
       
 
         var boids = _OnRadius.selected.Select(entity => entity.GetComponent<Boid>()).Where(x => x != null);
+       
+      
+
         var food = _OnRadius.selected.SkipWhile(entity => !entity.gameObject.CompareTag("Food")).Select(y => y.gameObject).FirstOrDefault(x => x = null);
 
 
@@ -81,10 +88,12 @@ public class Boid : MonoBehaviour
                 }
                 else if (boids.Any())
                 {
+                    List<Boid> list = boids.ToList();
+                    Debug.Log(list.Count);
                     Vector3 actualForce = Vector3.zero;
-                    actualForce += Separation(boids) * GameManager.instance.weightSeparation;
-                    actualForce += Cohesion(boids) * GameManager.instance.weightCohesion;
-                    actualForce  += Alignment(boids) * GameManager.instance.weightAlignment;
+                    actualForce += Separation(list) * GameManager.instance.weightSeparation;
+                    actualForce += Cohesion(list) * GameManager.instance.weightCohesion;
+                    actualForce += Alignment(list) * GameManager.instance.weightAlignment;
                     AddForce(actualForce);
                     //Debug.Log(" BOID: Fuera del radio del hunter ,hago flocking con "+ boids.Count());
                     return;
@@ -202,6 +211,7 @@ public class Boid : MonoBehaviour
 
         //hago el promedio 
         desired /= boids.Count();
+        desired-=transform.position;
         desired.Normalize();
         desired *= maxForce;
 

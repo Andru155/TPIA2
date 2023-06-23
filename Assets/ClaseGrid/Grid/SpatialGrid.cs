@@ -61,19 +61,19 @@ public class SpatialGrid : MonoBehaviour
     }
     //IA2-P2
     #region update Grid
-    public void UpdateGrid()
-    {
-        var ents = RecursiveWalker(transform)
-           .Select(x => x.GetComponent<GridEntity>())
-           .Where(x => x != null);
+    //public void UpdateGrid()
+    //{
+    //    var ents = RecursiveWalker(transform)
+    //       .Select(x => x.GetComponent<GridEntity>())
+    //       .Where(x => x != null);
 
-        foreach (var e in ents)
-        {
-            e.OnMoveCallback += UpdateEntity;
-            UpdateEntity(e);
-        }
-        Debug.Log($"hay{ents.Count()} entidades en la grilla");
-    }
+    //    foreach (var e in ents)
+    //    {
+    //        e.OnMoveCallback += UpdateEntity;
+    //        UpdateEntity(e);
+    //    }
+    //    Debug.Log($"hay{ents.Count()} entidades en la grilla");
+    //}
 
     public void AddEntity(GridEntity e)
     {

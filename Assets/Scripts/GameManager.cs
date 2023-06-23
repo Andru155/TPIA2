@@ -113,7 +113,7 @@ public class GameManager : MonoBehaviour
         if (!boids.Contains(b))
         {
             boids.Add(b);
-            grid.UpdateGrid();
+            grid.AddEntity(b.myEntity);
         }
     }
 
@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
         {
             boids.Remove(b);
             grid.RemoveEntity(b.myEntity);
-            grid.UpdateGrid();
+           
         }
     }
 
@@ -140,7 +140,9 @@ public class GameManager : MonoBehaviour
             {
                 for (int i = 0; i < quantityToSpawn - boids.Count; i++)
                 {
-                    var a = Instantiate(Sample, GetRandomLocation(), Quaternion.identity);
+                    Boid a = Instantiate(Sample, GetRandomLocation(), Quaternion.identity);
+                    a.transform.parent = transform;
+                   
                     Debug.Log("spawneo boid");
                     yield return new WaitForSeconds(2f);
                    

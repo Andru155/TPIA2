@@ -181,9 +181,9 @@ public class HunterIA2 : MonoBehaviour
         {
 
             IEnumerable<Boid> boids = myRadius.Query()
-            .Select(x => x.GetComponent<Boid>())
+            .OfType<Boid>()
             .Where(x => x != null);
-            if (boids.Count()>0)
+            if (boids.Any())
             {
                 GetNearestTarget(boids);
                 
@@ -233,7 +233,9 @@ public class HunterIA2 : MonoBehaviour
     #region Movement
     Vector3 Pursuit(Boid actualTarget)
     {
-
+        Debug.Log(actualTarget);
+        if (actualTarget == null) return Vector3.zero;
+        
         Vector3 finalPos = actualTarget.transform.position + actualTarget._velocity * Time.fixedDeltaTime;
 
         Vector3 desired = finalPos - transform.position;
